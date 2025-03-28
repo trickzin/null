@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .container {
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input {
+            padding: 8px;
+            width: 200px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #log {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .log-entry {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>teste</h1>
+        
+        <form id="apiForm">
+            <div class="form-group">
+                <label for="uid">UID:</label>
+                <input type="text" id="uid" name="uid" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="quantity">Amount:</label>
+                <input type="number" id="quantity" name="quantity" required>
+            </div>
+            
+            <button type="submit">send</button>
+        </form>
+
+        <h2>Log:</h2>
+        <div id="log"></div>
+    </div>
+
+    <script>
+        const form = document.getElementById('apiForm');
+        const logDiv = document.getElementById('log');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const uid = document.getElementById('uid').value;
+            const quantity = document.getElementById('quantity').value;
+            
+            const url = `http://127.0.0.1:8080/api/like?uid=${encodeURIComponent(uid)}&quantity=${encodeURIComponent(quantity)}`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                const logEntry = document.createElement('div');
+                logEntry.className = 'log-entry';
+                logEntry.innerHTML = `<strong>[${new Date().toLocaleTimeString()}]</strong><br>${JSON.stringify(data, null, 2)}`;
+                
+                logDiv.insertBefore(logEntry, logDiv.firstChild);
+                
+            } catch (error) {
+                const errorEntry = document.createElement('div');
+                errorEntry.className = 'log-entry';
+                errorEntry.style.color = 'red';
+                errorEntry.innerHTML = `<strong>[${new Date().toLocaleTimeString()}] Erro:</strong><br>${error.message}`;
+                logDiv.insertBefore(errorEntry, logDiv.firstChild);
+            }
+        });
+    </script>
+</body>
+</html>
